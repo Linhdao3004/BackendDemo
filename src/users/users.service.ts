@@ -24,8 +24,8 @@ export class UsersService {
     return this.usersRepository.find();
   }
 
-  findOne(id: UUID) {
-    return `This action returns a #${id} user`;
+  findOne(id: string) {
+    return this.usersRepository.findOneBy({ id });
   }
 
   update(id: UUID, updateUserDto: UpdateUserDto) {
@@ -33,6 +33,10 @@ export class UsersService {
   }
 
   remove(id: UUID) {
-    return `This action removes a #${id} user`;
+    return this.usersRepository.delete(id);
+  }
+
+  removeAll() {
+    return this.usersRepository.clear();
   }
 }
