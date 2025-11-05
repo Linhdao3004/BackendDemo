@@ -14,7 +14,7 @@ export class UsersService {
   ) {}
   create(createUserDto: CreateUserDto): Promise<User> {
     const user = this.usersRepository.create({
-      id: randomUUID(),
+      idUser: randomUUID(),
       ...createUserDto,
     });
     return this.usersRepository.save(user);
@@ -24,8 +24,8 @@ export class UsersService {
     return this.usersRepository.find();
   }
 
-  findOne(id: string) {
-    return this.usersRepository.findOneBy({ id });
+  findOne(idUser: string) {
+    return this.usersRepository.findOneBy({ idUser });
   }
 
   update(id: UUID, updateUserDto: UpdateUserDto) {
