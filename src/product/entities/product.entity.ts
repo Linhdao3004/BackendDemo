@@ -1,4 +1,3 @@
-import { CartItem } from '../../cart-item/entities/cart-item.entity';
 import { OrderItem } from '../../order-item/entities/order-item.entity';
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 @Entity()
@@ -14,8 +13,6 @@ export class Product {
 
   @OneToMany(() => OrderItem, (orderItem) => orderItem.product)
   orderItems: OrderItem[];
-  @OneToMany(() => CartItem, (cartItem) => cartItem.products)
-  cartItems: CartItem[];
 
   @Column()
   stock: number;

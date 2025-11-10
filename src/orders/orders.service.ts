@@ -11,17 +11,21 @@ import { User } from 'src/users/entities/user.entity';
 export class OrdersService {
   @InjectRepository(Order)
   private orderRepository: Repository<Order>;
+  @InjectRepository(User)
   private userRepository: Repository<User>;
-  async create(createOrderDto: CreateOrderDto): Promise<Order> {
-    const IsUser = await this.userRepository.findOneBy({
-      idUser: createOrderDto.idUser,
+  async create(createOrderDto: CreateOrderDto, userId: string): Promise<Order> {
+    console.log(userId);
+
+    const user = await this.userRepository.findOneBy({
+      idUser: userId,
     });
 
-    if (!IsUser) {
-      throw new NotFoundException(`User not found id:${createOrderDto.idUser}`);
+    if (!user) {
+      throw new NotFoundException(`User not found id:${userId}`);
     }
     const order = this.orderRepository.create({
       idOrder: randomUUID(),
+      userId: userId,
       ...createOrderDto,
     });
     return this.orderRepository.save(order);

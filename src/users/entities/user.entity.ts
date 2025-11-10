@@ -1,4 +1,4 @@
-import { CartItem } from '../../cart-item/entities/cart-item.entity';
+import { RefreshToken } from '../../refresh_token/entities/refresh_token.entity';
 import { Order } from '../../orders/entities/order.entity';
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 @Entity()
@@ -32,7 +32,6 @@ export class User {
 
   @OneToMany(() => Order, (order) => order.user)
   orders: Order[];
-
-  @OneToMany(() => CartItem, (cartItem) => cartItem.user)
-  cartItems: CartItem[];
+  @OneToMany(() => RefreshToken, (refreshToken) => refreshToken.user)
+  refreshToken: RefreshToken[];
 }

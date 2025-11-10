@@ -10,9 +10,5 @@ export class CreateOrderDto {
 
   @IsNotEmpty()
   @IsString()
-  idUser: string;
-
-  @IsNotEmpty()
-  @IsString()
   status: string;
 }

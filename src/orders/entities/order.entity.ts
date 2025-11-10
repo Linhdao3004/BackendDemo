@@ -25,6 +25,9 @@ export class Order {
   @JoinColumn({ name: 'idUser' })
   user: User;
 
+  @Column('uuid')
+  userId: string;
+
   @OneToMany(() => OrderItem, (orderItem) => orderItem.order)
   orderItems: OrderItem[];
 

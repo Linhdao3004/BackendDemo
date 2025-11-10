@@ -7,18 +7,21 @@ import {
   Param,
   Delete,
   Request,
+  UseGuards,
 } from '@nestjs/common';
 import { OrdersService } from './orders.service';
 import { CreateOrderDto } from './dto/create-order.dto';
+import { JwtAuthGuard } from 'src/guard/jwt-auth.guard';
 // import { UpdateOrderDto } from './dto/update-order.dto';
 
 @Controller('orders')
 export class OrdersController {
   constructor(private readonly ordersService: OrdersService) {}
 
+  @UseGuards(JwtAuthGuard)
   @Post('add-order')
-  create(@Body() createOrderDto: CreateOrderDto) {
-    return this.ordersService.create({ ...createOrderDto });
+  create(@Request() req: any, @Body() createOrderDto: CreateOrderDto) {
+    return this.ordersService.create({ ...createOrderDto }, req.payload.idUser);
   }
 
   @Get()

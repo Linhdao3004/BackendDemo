@@ -7,7 +7,11 @@ import { ProductModule } from './product/product.module';
 import { OrdersModule } from './orders/orders.module';
 import { OrderItemModule } from './order-item/order-item.module';
 import { PaymentModule } from './payment/payment.module';
-import { CartItemModule } from './cart-item/cart-item.module';
+import { AuthModule } from './auth/auth.module';
+import { ConfigModule } from '@nestjs/config';
+import { JwtStrategy } from './passport/jwt.strategy/jwt.strategy';
+import { LocalStrategy } from './passport/local.strategy/local.strategy';
+import { RefreshTokenModule } from './refresh_token/refresh_token.module';
 
 @Module({
   imports: [
@@ -21,14 +25,18 @@ import { CartItemModule } from './cart-item/cart-item.module';
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
       synchronize: false,
     }),
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
     UsersModule,
     ProductModule,
     OrdersModule,
     OrderItemModule,
     PaymentModule,
-    CartItemModule,
+    AuthModule,
+    RefreshTokenModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, JwtStrategy, LocalStrategy],
 })
 export class AppModule {}
