@@ -16,6 +16,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   async validate(payload: any) {
     // payload chính là nội dung bạn "sign" trong token (ví dụ: { sub, username })
     // Hàm này phải return ra user object mà bạn muốn gắn vào req.user
+    // console.log(payload);
+
     return {
       idUser: payload.sub,
       username: payload.username,

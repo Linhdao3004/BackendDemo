@@ -8,7 +8,7 @@ export class CreateOrderItemDto {
   @IsUUID()
   idProduct: string;
 
-  @IsString()
-  @IsUUID()
-  idOrder: string;
+  // @IsString()
+  // @IsUUID()
+  // idOrder: string;
 }

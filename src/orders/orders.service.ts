@@ -1,11 +1,17 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Order } from './entities/order.entity';
 import { randomUUID } from 'crypto';
-import { Repository } from 'typeorm';
+import { Repository, type DeepPartial } from 'typeorm';
 import { User } from 'src/users/entities/user.entity';
+import { OrderItem } from 'src/order-item/entities/order-item.entity';
+import { Product } from 'src/product/entities/product.entity';
 
 @Injectable()
 export class OrdersService {
@@ -13,26 +19,76 @@ export class OrdersService {
   private orderRepository: Repository<Order>;
   @InjectRepository(User)
   private userRepository: Repository<User>;
-  async create(createOrderDto: CreateOrderDto, userId: string): Promise<Order> {
-    console.log(userId);
+  @InjectRepository(Product)
+  private productRepository: Repository<Product>;
 
-    const user = await this.userRepository.findOneBy({
-      idUser: userId,
-    });
+  async create(createOrderDto: CreateOrderDto, userId: string) {
+    let Amount = 0;
+    for (const item of createOrderDto.orderItems) {
+      console.log(item.idProduct);
+      const product = await this.productRepository.findOneBy({
+        idProduct: item.idProduct,
+      });
+      console.log(product);
 
-    if (!user) {
-      throw new NotFoundException(`User not found id:${userId}`);
+      if (!product) {
+        throw new NotFoundException(`Product not found id:${item.idProduct}`);
+      }
+      if (product.stock <= 0) {
+        throw new BadRequestException(
+          `Product ${product.productName} is out of stock`,
+        );
+      }
+      if (item.quantity > product.stock) {
+        throw new BadRequestException(
+          `Product ${product.productName} only has ${product.stock} left`,
+        );
+      }
+
+      Amount = Amount + item.quantity * product.price;
     }
+    console.log(Amount);
+
     const order = this.orderRepository.create({
       idOrder: randomUUID(),
-      userId: userId,
+      idUser: userId,
       ...createOrderDto,
+      // tạo orderItem cùng lúc với order
+      orderItems: createOrderDto.orderItems.map(
+        (item) =>
+          ({
+            product: { idProduct: item.idProduct },
+            quantity: item.quantity,
+          }) as DeepPartial<OrderItem>, // ép kiểu
+      ),
+      createdAt: new Date(),
+      totalAmount: Amount,
     });
+    await this.updateStockOfProduct(createOrderDto);
     return this.orderRepository.save(order);
+  }
+
+  async updateStockOfProduct(createOrderDto: CreateOrderDto) {
+    for (const item of createOrderDto.orderItems) {
+      // console.log(item.idProduct);
+      const product = await this.productRepository.findOneBy({
+        idProduct: item.idProduct,
+      });
+      console.log(product?.stock);
+      if (!product) {
+        throw new NotFoundException(`Product not found id:${item.idProduct}`);
+      }
+      const newStock = product.stock - item.quantity;
+      await this.productRepository.update(item.idProduct, { stock: newStock });
+    }
   }
 
   findAll() {
     return this.orderRepository.find();
+  }
+
+  findAllOrderItem() {
+    return;
   }
 
   findOne(idOrder: string) {
@@ -45,5 +101,9 @@ export class OrdersService {
 
   remove(id: number) {
     return `This action removes a #${id} order`;
+  }
+
+  removeAll() {
+    return this.orderRepository.deleteAll();
   }
 }

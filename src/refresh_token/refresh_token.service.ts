@@ -23,10 +23,7 @@ export class RefreshTokenService {
     secretEnv: any,
     payload: any,
   ): Promise<RefreshToken> {
-    console.log(payload);
     const expired = new Date(payload.exp * 1000);
-    console.log(expired);
-
     const refresh = this.refreshTokenRepository.create({
       refreshId: randomUUID(),
       createdAt: new Date(),

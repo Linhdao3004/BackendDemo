@@ -18,23 +18,26 @@ export class Order {
   @PrimaryGeneratedColumn('uuid')
   idOrder: string;
 
-  @Column()
+  @Column({ type: 'float' })
   totalAmount: number;
 
   @ManyToOne(() => User, (user) => user.orders, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'idUser' })
   user: User;
 
-  @Column('uuid')
-  userId: string;
-
-  @OneToMany(() => OrderItem, (orderItem) => orderItem.order)
+  @OneToMany(() => OrderItem, (orderItem) => orderItem.order, {
+    cascade: true, // 👈 để tạo Order + OrderItems cùng lúc
+    eager: true, // 👈 tự load items khi query Order
+  })
   orderItems: OrderItem[];
+  @Column('uuid')
+  idUser: string;
 
   @OneToOne(() => Payment, (payment) => payment.order)
   payment: Payment;
 
-  @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' }) // chọn thời gian hiện tại
+  @Column()
+  // @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' }) // chọn thời gian hiện tại
   createdAt: Date;
 
   @Column()

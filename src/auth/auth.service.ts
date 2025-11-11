@@ -41,6 +41,8 @@ export class AuthService {
     user: any,
   ): Promise<any> {
     const refresh_token = await this.login(user);
+    console.log(refresh_token);
+
     const secretEnv = this.configService.get<string>('JWT_SECRET');
     const payload = this.jwtService.verify(refresh_token.refresh_token, {
       secret: secretEnv,

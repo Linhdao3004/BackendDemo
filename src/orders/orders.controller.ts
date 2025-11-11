@@ -18,15 +18,23 @@ import { JwtAuthGuard } from 'src/guard/jwt-auth.guard';
 export class OrdersController {
   constructor(private readonly ordersService: OrdersService) {}
 
+  // truyền token vào lấy payload thông qua passport/jwt.strategy.ts
   @UseGuards(JwtAuthGuard)
   @Post('add-order')
-  create(@Request() req: any, @Body() createOrderDto: CreateOrderDto) {
-    return this.ordersService.create({ ...createOrderDto }, req.payload.idUser);
+  create(@Request() req: any, @Body() createOrderDto: any) {
+    // console.log(req.user.idUser);
+
+    return this.ordersService.create({ ...createOrderDto }, req.user.idUser);
   }
 
   @Get()
   findAll() {
     return this.ordersService.findAll();
+  }
+
+  @Post('order-item')
+  findAllOrderItem() {
+    return this.ordersService.findAllOrderItem();
   }
 
   @Get(':id')
@@ -42,5 +50,10 @@ export class OrdersController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.ordersService.remove(+id);
+  }
+
+  @Delete()
+  removeAll() {
+    return this.ordersService.removeAll();
   }
 }

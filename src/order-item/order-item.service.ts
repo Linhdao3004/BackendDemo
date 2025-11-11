@@ -53,7 +53,7 @@ export class OrderItemService {
     if (!orderItem)
       throw new NotFoundException(`OrderItem with id ${idOrderItem} not found`);
 
-    // 2️⃣ Nếu có update productId, validate product tồn tại
+    // 2️⃣ Nếu có update idProduct, validate product tồn tại
     if (updateDto.idProduct) {
       const product = await this.productRepository.findOne({
         where: { idProduct: updateDto.idProduct },
