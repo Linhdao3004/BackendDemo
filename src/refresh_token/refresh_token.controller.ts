@@ -13,6 +13,7 @@ import { RefreshTokenService } from './refresh_token.service';
 import { CreateRefreshTokenDto } from './dto/create-refresh_token.dto';
 import { UpdateRefreshTokenDto } from './dto/update-refresh_token.dto';
 import { LocalAuthGuard } from 'src/guard/local-auth.guard';
+import type { UUID } from 'crypto';
 
 @Controller('refresh-token')
 export class RefreshTokenController {
@@ -24,20 +25,24 @@ export class RefreshTokenController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.refreshTokenService.findOne(+id);
+  findOne(@Param('id') refreshId: UUID) {
+    return this.refreshTokenService.findOne(refreshId);
   }
 
-  @Patch(':id')
-  update(
-    @Param('id') id: string,
-    @Body() updateRefreshTokenDto: UpdateRefreshTokenDto,
-  ) {
-    return this.refreshTokenService.update(+id, updateRefreshTokenDto);
-  }
-
+  // @Patch(':id')
+  // update(
+  //   @Param('id') refreshId: UUID,
+  //   @Body() updateRefreshTokenDto: UpdateRefreshTokenDto,
+  // ) {
+  //   return this.refreshTokenService.update(refreshId, updateRefreshTokenDto);
+  // }
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.refreshTokenService.remove(+id);
+  remove(@Param('id') refreshId: UUID) {
+    return this.refreshTokenService.remove(refreshId);
+  }
+
+  @Delete()
+  removeAll() {
+    return this.refreshTokenService.removeAll();
   }
 }

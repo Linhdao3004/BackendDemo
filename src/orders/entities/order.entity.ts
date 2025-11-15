@@ -40,6 +40,6 @@ export class Order {
   // @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' }) // chọn thời gian hiện tại
   createdAt: Date;
 
-  @Column()
+  @Column({ default: 'pending' })
   status: string;
 }

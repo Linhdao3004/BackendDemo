@@ -25,11 +25,11 @@ export class OrdersService {
   async create(createOrderDto: CreateOrderDto, userId: string) {
     let Amount = 0;
     for (const item of createOrderDto.orderItems) {
-      console.log(item.idProduct);
-      const product = await this.productRepository.findOneBy({
-        idProduct: item.idProduct,
+      // console.log(item.idProduct);
+      const product = await this.productRepository.findOne({
+        where: { idProduct: item.idProduct },
       });
-      console.log(product);
+      // console.log(product);
 
       if (!product) {
         throw new NotFoundException(`Product not found id:${item.idProduct}`);
@@ -45,22 +45,30 @@ export class OrdersService {
         );
       }
 
-      Amount = Amount + item.quantity * product.price;
+      Amount += item.quantity * product.price;
     }
-    console.log(Amount);
+    // console.log(Amount);
+
+    const orderItems: DeepPartial<OrderItem>[] = await Promise.all(
+      createOrderDto.orderItems.map(async (item) => {
+        const product = await this.productRepository.findOne({
+          where: { idProduct: item.idProduct },
+        });
+
+        return {
+          product, // save full product entity
+          quantity: item.quantity,
+          productName: product?.productName,
+        } as DeepPartial<OrderItem>;
+      }),
+    );
 
     const order = this.orderRepository.create({
       idOrder: randomUUID(),
       idUser: userId,
       ...createOrderDto,
       // tạo orderItem cùng lúc với order
-      orderItems: createOrderDto.orderItems.map(
-        (item) =>
-          ({
-            product: { idProduct: item.idProduct },
-            quantity: item.quantity,
-          }) as DeepPartial<OrderItem>, // ép kiểu
-      ),
+      orderItems,
       createdAt: new Date(),
       totalAmount: Amount,
     });
@@ -74,7 +82,7 @@ export class OrdersService {
       const product = await this.productRepository.findOneBy({
         idProduct: item.idProduct,
       });
-      console.log(product?.stock);
+      // console.log(product?.stock);
       if (!product) {
         throw new NotFoundException(`Product not found id:${item.idProduct}`);
       }
@@ -83,8 +91,21 @@ export class OrdersService {
     }
   }
 
-  findAll() {
-    return this.orderRepository.find();
+  async findAll() {
+    const orders = await this.orderRepository.find({
+      relations: ['orderItems', 'orderItems.product'],
+    });
+
+    return orders.map((order) => ({
+      idOrder: order.idOrder,
+      totalAmount: order.totalAmount,
+      createdAt: order.createdAt,
+      orderItems: order.orderItems.map((item) => ({
+        productName: item.product?.productName,
+        quantity: item.quantity,
+        price: item.product?.price,
+      })),
+    }));
   }
 
   findAllOrderItem() {

@@ -34,4 +34,10 @@ export class User {
   orders: Order[];
   @OneToMany(() => RefreshToken, (refreshToken) => refreshToken.user)
   refreshToken: RefreshToken[];
+
+  @Column({ nullable: true })
+  confirmCodePass: number;
+
+  @Column({ type: 'timestamp', nullable: true })
+  confirmCodePassExpires: Date;
 }

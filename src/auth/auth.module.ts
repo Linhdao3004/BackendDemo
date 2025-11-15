@@ -11,6 +11,7 @@ import { RefreshTokenModule } from 'src/refresh_token/refresh_token.module';
 import { Auth } from './entities/auth.entity';
 import { RefreshToken } from 'src/refresh_token/entities/refresh_token.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { User } from 'src/users/entities/user.entity';
 
 @Module({
   controllers: [AuthController],
@@ -18,14 +19,14 @@ import { TypeOrmModule } from '@nestjs/typeorm';
     UsersModule,
     PassportModule,
     RefreshTokenModule,
-    TypeOrmModule.forFeature([Auth, RefreshToken]),
+    TypeOrmModule.forFeature([Auth, RefreshToken, User]),
     ConfigModule.forRoot({ isGlobal: true }),
     JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
         secret: configService.get<string>('JWT_SECRET'), // mã bí mật JWT
-        signOptions: { expiresIn: '1h' }, //thời gian hết token
+        signOptions: { expiresIn: '1m' }, //thời gian hết token
       }),
     }),
   ],

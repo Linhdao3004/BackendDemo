@@ -15,23 +15,27 @@ export class RefreshTokenService {
   constructor(
     @InjectRepository(RefreshToken)
     private readonly refreshTokenRepository: Repository<RefreshToken>,
+    private readonly jwtService: JwtService,
   ) {}
-  async create(
-    createRefreshTokenDto: CreateRefreshTokenDto,
-    user: any,
-    refresh_token: any,
-    secretEnv: any,
-    payload: any,
-  ): Promise<RefreshToken> {
+  async create(refreshToken: any): Promise<RefreshToken> {
+    const secretEnv = process.env.JWT_SECRET;
+    const payload = await this.jwtService.verify(refreshToken, {
+      secret: secretEnv,
+    });
+    // console.log(payload);
+
     const expired = new Date(payload.exp * 1000);
+    // console.log(`expired:${expired}`);
+    // console.log('jkashckj:' + payload.sub);
+
     const refresh = this.refreshTokenRepository.create({
       refreshId: randomUUID(),
+      idUser: payload.sub,
       createdAt: new Date(),
       updatedAt: new Date(),
       expiresAt: expired,
-      token: refresh_token.refresh_token,
-      ...createRefreshTokenDto,
-      userId: payload.sub,
+      token: refreshToken,
+      // idUser: payload.sub,
     });
     return this.refreshTokenRepository.save(refresh);
   }
@@ -40,15 +44,19 @@ export class RefreshTokenService {
     return this.refreshTokenRepository.find();
   }
 
-  findOne(id: number) {
+  findOne(id: string) {
     return `This action returns a #${id} refreshToken`;
   }
 
-  update(id: number, updateRefreshTokenDto: UpdateRefreshTokenDto) {
+  update(id: string, updateRefreshTokenDto: UpdateRefreshTokenDto) {
     return `This action updates a #${id} refreshToken`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} refreshToken`;
+  remove(refreshId: string) {
+    return this.refreshTokenRepository.delete({ refreshId });
+  }
+
+  removeAll() {
+    return this.refreshTokenRepository.deleteAll();
   }
 }

@@ -40,7 +40,7 @@ export class ProductController {
   }
 
   @Delete(':id')
-  remove(@Param('idProduct') idProduct: UUID) {
+  remove(@Param('id') idProduct: UUID) {
     return this.productService.remove(idProduct);
   }
 }

@@ -12,6 +12,7 @@ import { ConfigModule } from '@nestjs/config';
 import { JwtStrategy } from './passport/jwt.strategy/jwt.strategy';
 import { LocalStrategy } from './passport/local.strategy/local.strategy';
 import { RefreshTokenModule } from './refresh_token/refresh_token.module';
+import { MailerModule } from '@nestjs-modules/mailer';
 
 @Module({
   imports: [
@@ -25,8 +26,16 @@ import { RefreshTokenModule } from './refresh_token/refresh_token.module';
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
       synchronize: false,
     }),
-    ConfigModule.forRoot({
-      isGlobal: true,
+    ConfigModule.forRoot({ envFilePath: '.env', isGlobal: true }),
+    MailerModule.forRoot({
+      transport: {
+        host: 'smtp.gmail.com',
+        port: parseInt(process.env.EMAIL_PORT!, 10),
+        auth: {
+          user: process.env.EMAIL_USERNAME,
+          pass: process.env.EMAIL_PASSWORD,
+        },
+      },
     }),
     UsersModule,
     ProductModule,

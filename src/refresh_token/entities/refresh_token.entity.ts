@@ -13,11 +13,10 @@ export class RefreshToken {
   refreshId: string;
 
   @ManyToOne(() => User, (user) => user.refreshToken, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'idUser' })
   user: User;
-  @JoinColumn({ name: 'userId' })
   @Column('uuid')
-  userId: string;
-
+  idUser: string;
   @Column()
   token: string;
 
