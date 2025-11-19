@@ -71,9 +71,8 @@ export class AuthService {
 
   async login_refresh(expiresAccess: any, refresh_token: any) {
     try {
-      const date = parseInt(this.formatDate(new Date()), 10);
-      const secret = process.env.JWT_SECRET;
-      const expA = parseInt(this.formatDate(expiresAccess), 10); //YYMMDDHHmmss
+      const date = new Date();
+      const expA = expiresAccess;
 
       // console.log(refresh_token);
 
@@ -89,10 +88,8 @@ export class AuthService {
         const payload_re = this.jwtService.verify(refresh?.token);
         console.log(payload_re);
 
-        const expRe = parseInt(
-          this.formatDate(new Date(payload_re.exp * 1000)),
-          10,
-        );
+        const expRe = new Date(payload_re.exp * 1000);
+
         // console.log(expRe);//YYMMDDHHmmss
         //refresh token expired
         if (expRe < date) {

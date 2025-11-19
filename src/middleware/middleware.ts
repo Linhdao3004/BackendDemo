@@ -1,4 +1,5 @@
 import { NotFoundException } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
 
 export const cookieExtractor = (req: Request): string | null => {

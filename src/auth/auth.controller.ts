@@ -44,7 +44,7 @@ export class AuthController {
   ) {
     const dateAccess = new Date(req.user.exp * 1000);
     const getRefreshTokenFromCookie = req.cookies['refresh_token']; // bearer <token>
-    const getAccessTokenFromCookie = req.cookies['access_token']; // bearer <token>
+    // const getAccessTokenFromCookie = req.cookies['access_token']; // bearer <token>
 
     // console.log(refreshToken);
     const newToken = await this.authService.login_refresh(
@@ -68,6 +68,7 @@ export class AuthController {
       secure: process.env.NODE_ENV === 'production', //Chỉ gửi cookie qua HTTPS nếu đang ở môi trường production
       sameSite: 'strict', //Ngăn chặn cookie được gửi trong request từ domain khác (chống CSRF)
       path: '/',
+      maxAge: 1000 * 60 * 60 * 24 * 1,
     });
   }
   // @UseGuards(JwtAuthGuard)

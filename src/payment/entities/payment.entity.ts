@@ -12,10 +12,10 @@ export class Payment {
   @PrimaryGeneratedColumn('uuid')
   idPayment: string;
 
-  @Column()
+  @Column({ default: 'offline' })
   method: string;
 
-  @Column()
+  @Column('decimal', { precision: 11, scale: 2 })
   amount: number;
 
   @Column({ default: 'pending' })
@@ -27,4 +27,7 @@ export class Payment {
   @OneToOne(() => Order, (order) => order.payment, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'idOrder' })
   order: Order;
+
+  @Column('uuid')
+  idOrder: string;
 }

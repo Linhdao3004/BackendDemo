@@ -16,11 +16,10 @@ import type { UUID } from 'crypto';
 export class PaymentController {
   constructor(private readonly paymentService: PaymentService) {}
 
-  @Post('add-payment')
-  create(@Body() createPaymentDto: CreatePaymentDto) {
-    return this.paymentService.create(createPaymentDto);
-  }
-
+  // @Post('add-payment')
+  // create(@Body() createPaymentDto: CreatePaymentDto) {
+  //   return this.paymentService.create(createPaymentDto);
+  // }
   @Get()
   findAll() {
     return this.paymentService.findAll();
@@ -37,6 +36,11 @@ export class PaymentController {
     @Body() updatePaymentDto: UpdatePaymentDto,
   ) {
     return this.paymentService.update(idPayment, updatePaymentDto);
+  }
+
+  @Patch('confirm/:id')
+  confirmPayment(@Param('id') idPayment: UUID) {
+    return this.paymentService.confirmPayment(idPayment);
   }
 
   @Delete(':id')

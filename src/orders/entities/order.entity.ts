@@ -18,7 +18,7 @@ export class Order {
   @PrimaryGeneratedColumn('uuid')
   idOrder: string;
 
-  @Column({ type: 'float' })
+  @Column('decimal', { precision: 11, scale: 2 })
   totalAmount: number;
 
   @ManyToOne(() => User, (user) => user.orders, { onDelete: 'CASCADE' })
