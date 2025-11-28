@@ -17,7 +17,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
         secret: configService.get<string>('JWT_SECRET'), // mã bí mật JWT
-        signOptions: { expiresIn: '1h' }, //thời gian hết token
+        signOptions: { expiresIn: '1d' }, //thời gian hết token
       }),
     }), // ✅ cần để dùng JwtService
   ],
@@ -25,4 +25,4 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
   providers: [RefreshTokenService],
   exports: [RefreshTokenService],
 })
-export class RefreshTokenModule {}
+export class RefreshTokenModule { }

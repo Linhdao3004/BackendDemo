@@ -3,7 +3,7 @@ import {
   Get,
   Post,
   Body,
-  // Patch,
+  Patch,
   Param,
   Delete,
   Req,
@@ -13,12 +13,15 @@ import {
 import { OrdersService } from './orders.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { JwtAuthGuard } from 'src/guard/jwt-auth.guard';
+import { RolesGuard } from 'src/guard/roles.guard';
+import { Roles } from 'src/guard/roles.decorator';
+import { Role } from 'src/enums/role.enum';
 import type { Request } from 'express';
 // import { UpdateOrderDto } from './dto/update-order.dto';
 
 @Controller('orders')
 export class OrdersController {
-  constructor(private readonly ordersService: OrdersService) {}
+  constructor(private readonly ordersService: OrdersService) { }
 
   // truyền token vào lấy payload thông qua passport/jwt.strategy.ts
   // @UseGuards(JwtAuthGuard)
@@ -44,9 +47,9 @@ export class OrdersController {
   @Post('/cancell-order/:id')
   async cancellOrder(
     @Param('id') idOrder: any,
-    @Body() createOrderDto: CreateOrderDto,
+    @Body('status') status: string,
   ) {
-    await this.ordersService.cancellOrder(createOrderDto, idOrder);
+    await this.ordersService.cancellOrder(idOrder, status);
     return { message: `You cancelled order ${idOrder}` };
   }
 
@@ -60,6 +63,13 @@ export class OrdersController {
     return this.ordersService.findAllOrderItem();
   }
 
+  @UseGuards(JwtAuthGuard)
+  @Get('my-orders')
+  findMyOrders(@Req() req: Request) {
+    const user = req.user as any;
+    return this.ordersService.findOrderByUserId(user.idUser);
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.ordersService.findOne(id);
@@ -70,6 +80,13 @@ export class OrdersController {
   //   return this.ordersService.update(id, updateOrderDto);
   // }
 
+  @Patch(':id/status')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN)
+  updateOrderStatus(@Param('id') id: string, @Body('status') status: string) {
+    return this.ordersService.updateOrderStatus(id, status);
+  }
+
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.ordersService.remove(+id);
@@ -78,5 +95,12 @@ export class OrdersController {
   @Delete()
   removeAll() {
     return this.ordersService.removeAll();
+  }
+
+
+  @Post('send-order-success-mail/:id')
+  async sendOrderSuccessMail(@Param('id') idOrder: any) {
+    await this.ordersService.sendOrderSuccessMail(idOrder);
+    return { message: `You sent order success mail ${idOrder}` };
   }
 }

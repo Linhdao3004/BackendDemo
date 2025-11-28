@@ -14,7 +14,7 @@ import type { UUID } from 'crypto';
 
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(private readonly usersService: UsersService) { }
   // nhìn t giải thích
   //con cái route này là phương thức POST,m truyền /regggister thì có nghĩa là /usẻ/register với phương thức POST. Mà post thì là phương thcws thao tac voi duex liệu. Ko phải để ấy ddataa nên khi m /user/regisster m phải truyền boddy cho nó
   @Post('register')
@@ -30,14 +30,14 @@ export class UsersController {
 
   // ở hàm get này m có truyền :id thì có nghĩa là /user/id
   @Get(':id')
-  findOne(@Param('id') id: UUID) {
-    return this.usersService.findOne(id);
+  findOne(@Param('id') idUser: UUID) {
+    return this.usersService.findByUserId(idUser);
   }
 
   // patch cũng là phương thức làm việc với dữ liệu tương tự get nhưng với ý nghĩa khác. GET được định nghĩa là phương thức lấy dữ liệu. Nên chỉ lấy dữ liệu. PUT PATCH DELETE như tên của nó. DELETE là xóa dữ liệu, PUT PATCH là cập nhật dữ liệu
   @Patch(':id')
-  update(@Param('id') id: UUID, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(id, updateUserDto);
+  update(@Param('id') idUser: UUID, @Body() updateUserDto: UpdateUserDto) {
+    return this.usersService.update(idUser, updateUserDto);
   }
 
   @Delete()

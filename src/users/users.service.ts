@@ -12,7 +12,7 @@ export class UsersService {
   constructor(
     @InjectRepository(User)
     private usersRepository: Repository<User>,
-  ) {}
+  ) { }
   async create(createUserDto: CreateUserDto): Promise<User> {
     const userCheck = await this.findByUserName(createUserDto.username);
     if (userCheck) {
@@ -32,7 +32,7 @@ export class UsersService {
     return this.usersRepository.find();
   }
 
-  findOne(idUser: string) {
+  findByUserId(idUser: string) {
     return this.usersRepository.findOneBy({ idUser });
   }
 

@@ -11,7 +11,7 @@ export class ProductService {
   constructor(
     @InjectRepository(Product)
     private productRepository: Repository<Product>,
-  ) {}
+  ) { }
   create(createProductDto: CreateProductDto): Promise<Product> {
     const product = this.productRepository.create({
       idProduct: randomUUID(),

@@ -11,4 +11,12 @@ export class CreateProductDto {
   @IsNumber()
   @IsEmpty()
   stock: number;
+
+  @IsString()
+  @IsEmpty()
+  description: string;
+
+  @IsString()
+  @IsEmpty()
+  image: string;
 }

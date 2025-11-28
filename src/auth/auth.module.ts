@@ -26,11 +26,11 @@ import { User } from 'src/users/entities/user.entity';
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
         secret: configService.get<string>('JWT_SECRET'), // mã bí mật JWT
-        signOptions: { expiresIn: '1m' }, //thời gian hết token
+        signOptions: { expiresIn: '1h' }, //thời gian hết token
       }),
     }),
   ],
   exports: [AuthService],
   providers: [AuthService, JwtStrategy, LocalStrategy],
 })
-export class AuthModule {}
+export class AuthModule { }

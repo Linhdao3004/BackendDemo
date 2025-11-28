@@ -34,10 +34,13 @@ export class AuthService {
     private readonly refreshTokenRepository: Repository<RefreshToken>,
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
-  ) {}
+  ) { }
 
   async createToken(user: any) {
-    const payload = { sub: user.idUser, username: user.username };
+    // AI bổ sung
+    const payload = { sub: user.idUser, username: user.username, role: user.role };
+    // AI bổ sung
+
     // payload signature and then create token
     const token = {
       access_token: this.jwtService.sign(payload),
@@ -57,6 +60,7 @@ export class AuthService {
     }
     await this.refreshTokenRepository.update(refresh_token.refreshId, {
       isRevoked: true,
+      updatedAt: new Date(),
     });
     return refresh_token;
   }
@@ -66,6 +70,7 @@ export class AuthService {
     const createReFreshToken = await this.refreshService.create(
       token.refresh_token,
     );
+
     return createReFreshToken;
   }
 
@@ -78,6 +83,7 @@ export class AuthService {
 
       //so sanh hạn token và giờ hiện tại
       if (expA < date) {
+
         const refresh = await this.refreshTokenRepository.findOneBy({
           token: refresh_token,
         });
@@ -85,7 +91,8 @@ export class AuthService {
           throw new NotFoundException('Not found refresh');
         }
 
-        const payload_re = this.jwtService.verify(refresh?.token);
+        // const payload_re = this.jwtService.verify(refresh?.token);
+        const payload_re = this.jwtService.verify(refresh_token);
         console.log(payload_re);
 
         const expRe = new Date(payload_re.exp * 1000);
@@ -93,20 +100,32 @@ export class AuthService {
         // console.log(expRe);//YYMMDDHHmmss
         //refresh token expired
         if (expRe < date) {
-          await this.refreshTokenRepository.update(refresh.refreshId, {
-            isRevoked: true,
-          });
+          // await this.refreshTokenRepository.update(refresh.refreshId, {
+          //   isRevoked: true,
+          // });
           throw new BadRequestException('Refresh token expired');
         }
         // check con hang va refresh token con hieu luc
-        if (expRe > date && refresh.isRevoked === false) {
-          this.refreshTokenRepository.update(refresh.refreshId, {
-            isRevoked: true,
+
+        // if (expRe > date && refresh.isRevoked === false) {
+        if (expRe > date) {
+          // update refresh Revoke khi refresh access token het han
+          // this.refreshTokenRepository.update(refresh.refreshId, {
+          //   isRevoked: true,
+          // });
+
+          // remove refresh token cũ để tạo refresh và access token mới
+          await this.refreshTokenRepository.delete({
+            token: refresh_token,
           });
 
           const user = {
             idUser: payload_re.sub,
             username: payload_re.username,
+            // AI bổ sung
+            role: payload_re.role,
+            // AI bổ sung
+
           };
           const newToken = await this.createToken(user);
           await this.refreshService.create(newToken.refresh_token);

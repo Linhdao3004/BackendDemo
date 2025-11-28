@@ -20,11 +20,14 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     // payload chính là nội dung bạn "sign" trong token (ví dụ: { sub, username })
     // Hàm này phải return ra user object mà bạn muốn gắn vào req.user
     // console.log(access_token.access_token);
-    // console.log(token);
+    // console.log(payload);
 
     return {
       idUser: payload.sub,
       username: payload.username,
+      // AI bổ sung
+      role: payload.role,
+      // AI bổ sung
       exp: payload.exp,
     };
   }

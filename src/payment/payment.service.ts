@@ -103,7 +103,7 @@ export class PaymentService {
     // nv ko biet tim payment va bam xac nhan lai
     if (payment.status === PaymentStatus.PAID) {
       return {
-        message: `You confirmed payment for ${order?.user.lastName} ${order?.user.fistName}'s order!`,
+        message: `You confirmed payment for ${order?.user.lastName} ${order?.user.firstName}'s order!`,
       };
     }
     // khach hang huy don khi da thanh toan thi hoan tien va tang stock  sp cua don hang huy
@@ -114,7 +114,7 @@ export class PaymentService {
       payment.status = PaymentStatus.REFUNDED;
       await this.paymentRepository.save(payment);
       return {
-        message: `You confirmed payment for ${order?.user.lastName} ${order?.user.fistName}'s order!`,
+        message: `You confirmed payment for ${order?.user.lastName} ${order?.user.firstName}'s order!`,
       };
     }
 
@@ -133,6 +133,38 @@ export class PaymentService {
 
   findAll() {
     return this.paymentRepository.find();
+  }
+
+  async findAllWithDetails() {
+    const payments = await this.paymentRepository.find({
+      relations: ['order', 'order.user', 'order.orderItems', 'order.orderItems.product'],
+      order: { order: { createdAt: 'DESC' } },
+    });
+
+    return payments.map((payment) => ({
+      idPayment: payment.idPayment,
+      method: payment.method,
+      amount: payment.amount,
+      status: payment.status,
+      transactionId: payment.transactionId,
+      idOrder: payment.idOrder,
+      order: {
+        idOrder: payment.order.idOrder,
+        totalAmount: payment.order.totalAmount,
+        createdAt: payment.order.createdAt,
+        status: payment.order.status,
+        user: {
+          firstName: payment.order.user.firstName,
+          lastName: payment.order.user.lastName,
+          email: payment.order.user.email,
+        },
+        orderItems: payment.order.orderItems.map((item) => ({
+          productName: item.product?.productName,
+          quantity: item.quantity,
+          price: item.product?.price,
+        })),
+      },
+    }));
   }
 
   findOneById(idPayment: string) {

@@ -14,7 +14,7 @@ import type { UUID } from 'crypto';
 
 @Controller('payment')
 export class PaymentController {
-  constructor(private readonly paymentService: PaymentService) {}
+  constructor(private readonly paymentService: PaymentService) { }
 
   // @Post('add-payment')
   // create(@Body() createPaymentDto: CreatePaymentDto) {
@@ -23,6 +23,11 @@ export class PaymentController {
   @Get()
   findAll() {
     return this.paymentService.findAll();
+  }
+
+  @Get('admin/all')
+  findAllWithDetails() {
+    return this.paymentService.findAllWithDetails();
   }
 
   @Get(':id')

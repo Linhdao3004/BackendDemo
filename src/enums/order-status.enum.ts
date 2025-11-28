@@ -1,10 +1,9 @@
 export enum OrderStatus {
-  PENDING = 'Pending',
-  CONFIRMED = 'Confirmed',
-  PROCESSING = 'Processing',
-  SHIPPED = 'Shipped',
-  DELIVERED = 'Delivered',
-  CANCELLED = 'Cancelled',
+  PENDING = 'pending',
+  CONFIRMED = 'confirmed',
+  PROCESSING = 'processing',
+  SHIPPED = 'shipping',
+  DELIVERED = 'delivered',
+  CANCELLED = 'cancelled',
   RETURNED = 'Returned',
-  REFUNDED = 'Refunded',
 }

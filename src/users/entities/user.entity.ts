@@ -1,6 +1,8 @@
 import { RefreshToken } from '../../refresh_token/entities/refresh_token.entity';
 import { Order } from '../../orders/entities/order.entity';
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import { Role } from '../../enums/role.enum';
+
 @Entity()
 export class User {
   @PrimaryGeneratedColumn('uuid')
@@ -12,22 +14,31 @@ export class User {
   @Column()
   password: string;
 
+  // AI bổ sung 
+  @Column({
+    type: 'enum',
+    enum: Role,
+    default: Role.USER,
+  })
+  role: Role;
+  // AI bổ sung 
+
   @Column()
   email: string;
 
-  @Column()
+  @Column({ nullable: true })
   phone: string;
 
   @Column()
-  fistName: string;
+  firstName: string;
 
   @Column()
   lastName: string;
 
-  @Column()
-  adress: string;
+  @Column({ nullable: true })
+  address: string;
 
-  @Column()
+  @Column({ nullable: true })
   birthday: Date;
 
   @OneToMany(() => Order, (order) => order.user)
